@@ -13,6 +13,7 @@ import com.rest.repository.CustomerRepository;
 import com.rest.utils.AbstractUtils;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +34,8 @@ public class CustomerController extends AbstractUtils {
     private final AccountRepository accountRepository;
     private final AuthController authController;
 
-    public CustomerController(CustomerRepository customerRepository, AccountRepository accountRepository, AuthController authController) {
+    @Autowired
+    public CustomerController(final CustomerRepository customerRepository, final AccountRepository accountRepository, final AuthController authController) {
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
         this.authController = authController;

@@ -8,8 +8,10 @@ package com.rest.model;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +35,9 @@ public class Customer implements Serializable {
     
     private static final long serialVersionUID = -1687201491262802111L;
     
+    @TableGenerator(name = "Customer_Gen", initialValue = 1000)
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Customer_Gen")
     private Long id;
     
     private String name;

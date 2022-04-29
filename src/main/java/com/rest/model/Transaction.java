@@ -8,8 +8,10 @@ package com.rest.model;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,13 +35,14 @@ public class Transaction implements Serializable {
     
     private static final long serialVersionUID = 6560053337492040659L;
     
+    @TableGenerator(name = "Transaction_Gen", initialValue = 999)
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Transaction_Gen")
     private Long id;
     
     private String type;
-    private Long TransactionFrom;
-    private Long TransactionTo;
+    private Long source;
+    private Long destination;
     private Long amount;
     private String transactionDate;
     
