@@ -6,6 +6,7 @@
 package com.rest.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -38,6 +39,11 @@ public class Account implements Serializable {
     private Long id;
     
     private Long customerId;
-    private Long customerBalance;
+    private BigDecimal customerBalance;
+    
+    public Account(Long customerId, BigDecimal customerBalance) {
+        this.customerId = customerId;
+        this.customerBalance = customerBalance;
+    }
     
 }

@@ -7,10 +7,13 @@ package com.rest.controller;
 
 import com.rest.model.Account;
 import com.rest.model.Customer;
+import com.rest.model.RegisterDto;
 import com.rest.model.Response;
 import com.rest.repository.AccountRepository;
 import com.rest.repository.CustomerRepository;
 import com.rest.utils.AbstractUtils;
+import com.rest.utils.Constants;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,29 +56,21 @@ public class CustomerController extends AbstractUtils {
     }
 
     @PostMapping(path = "/register", consumes = "application/json")
-    public ResponseEntity register(@RequestBody Customer customer) {
+    public ResponseEntity register(@RequestBody RegisterDto register) {
         int pin = generateRandomPin();
-        String date = currentDateTime("yyyy-MM-dd HH:mm:ss");
-        customer.setPin(pin);
-        customer.setRegistrationDate(date);
+        String date = currentDateTime(Constants.DATE_TIME_FORMAT);
+        Customer customer = new Customer(register.getName(), pin, date);
 
-        Customer reg = customerRepository.save(customer);
-        Account acc = new Account(0L, reg.getId(), 0L);
+        customer = customerRepository.save(customer);
+        Account acc = new Account(customer.getId(), new BigDecimal("0.00"));
         accountRepository.save(acc);
-        return ResponseEntity.status(HttpStatus.CREATED).body(reg);
+        return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 
     @GetMapping(path = "/all", produces = "application/json")
     public ResponseEntity fetchAll() {
         List<Customer> customers = customerRepository.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(customers);
-    }
-
-    private Integer generateRandomPin() {
-        int min = 1000;
-        int max = 9999;
-        int pin = (int) ((Math.random() * (max - min)) + min);
-        return pin;
-    }
+    }    
 
 }

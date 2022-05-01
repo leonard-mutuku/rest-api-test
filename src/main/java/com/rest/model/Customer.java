@@ -35,7 +35,7 @@ public class Customer implements Serializable {
     
     private static final long serialVersionUID = -1687201491262802111L;
     
-    @TableGenerator(name = "Customer_Gen", initialValue = 1000)
+    @TableGenerator(name = "Customer_Gen", initialValue = 999)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Customer_Gen")
     private Long id;
@@ -43,5 +43,11 @@ public class Customer implements Serializable {
     private String name;
     private Integer pin;
     private String registrationDate;
+    
+    public Customer(String name, Integer pin, String registrationDate) {
+        this.name = name;
+        this.pin = pin;
+        this.registrationDate = registrationDate;
+    }
     
 }

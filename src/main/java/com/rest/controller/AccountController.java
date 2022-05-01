@@ -13,6 +13,9 @@ import com.rest.model.TransferDto;
 import com.rest.repository.AccountRepository;
 import com.rest.repository.TransactionRepository;
 import com.rest.utils.AbstractUtils;
+import com.rest.utils.Constants;
+import java.math.BigDecimal;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,15 +60,20 @@ public class AccountController extends AbstractUtils {
     @PostMapping(path = "/credit", consumes = "application/json")
     public ResponseEntity creditAccount(@RequestBody CreditDebitDto creditDto) {
         Long customer_id = creditDto.getCustomerId();
-        Long credit_amount = creditDto.getAmount();
-        Account account = accountRepository.findByCustomerId(customer_id);
+        BigDecimal credit_amount = creditDto.getAmount();
+        BigDecimal min_credit_amnt = Constants.MIN_CREDIT_AMOUNT;
         Response response;
+        if (min_credit_amnt.compareTo(credit_amount) > 0) {
+            response = new Response(100, "Sorry! minimum credit amount is Ksh "+min_credit_amnt);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        Account account = accountRepository.findByCustomerId(customer_id);        
         if (account != null) {
             String transactionDate = currentDateTime("yyyy-MM-dd HH:mm:ss");
             Transaction transaction = new Transaction(0L, "Credit", 0L, customer_id, credit_amount, transactionDate);
             transactionRepository.save(transaction);
             
-            Long new_balance = credit_amount + account.getCustomerBalance();
+            BigDecimal new_balance = credit_amount.add(account.getCustomerBalance());
             account.setCustomerBalance(new_balance);
             accountRepository.save(account);
             
@@ -81,24 +89,29 @@ public class AccountController extends AbstractUtils {
     @PostMapping(path = "/debit", consumes = "application/json")
     public ResponseEntity debitAccount(@RequestBody CreditDebitDto creditDto) {
         Long customer_id = creditDto.getCustomerId();
-        Long debit_amount = creditDto.getAmount();
-        Account account = accountRepository.findByCustomerId(customer_id);        
+        BigDecimal debit_amount = creditDto.getAmount();
+        BigDecimal min_debit_amnt = Constants.MIN_DEBIT_AMOUNT;
         Response response;
+        if (min_debit_amnt.compareTo(debit_amount) > 0) {
+            response = new Response(100, "Sorry! minimum debit amount is Ksh "+min_debit_amnt);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        Account account = accountRepository.findByCustomerId(customer_id);                
         if (account != null) {
-            Long account_balance = account.getCustomerBalance();
-            if (account_balance >= debit_amount) {
+            BigDecimal account_balance = account.getCustomerBalance();
+            if (account_balance.compareTo(debit_amount) >= 0) {
                 String transactionDate = currentDateTime("yyyy-MM-dd HH:mm:ss");
                 Transaction transaction = new Transaction(0L, "Debit", customer_id, 0L, debit_amount, transactionDate);
                 transactionRepository.save(transaction);
 
-                Long new_balance = account_balance - debit_amount;
+                BigDecimal new_balance = account_balance.subtract(debit_amount);
                 account.setCustomerBalance(new_balance);
                 accountRepository.save(account);
 
                 String msg = "Ksh "+debit_amount+" debited from your account. Your new balance is Ksh "+new_balance;
                 response = new Response(0, msg);
             } else {
-                String msg = "Sorry! Insufficient funds. Ksh "+ (debit_amount - account_balance) +" more needed to perform transaction.";
+                String msg = "Sorry! Insufficient funds. Ksh "+ (debit_amount.subtract(account_balance)) +" more needed to perform transaction.";
                 response = new Response(105, msg);
             }            
         } else {
@@ -113,7 +126,16 @@ public class AccountController extends AbstractUtils {
         Response response;
         Long source_id = transferDto.getSource();
         Long destination_id = transferDto.getDestination();
-        Long transfer_amount = transferDto.getAmount();
+        BigDecimal transfer_amount = transferDto.getAmount();
+        BigDecimal min_transfer_amnt = Constants.MIN_TRANSFER_AMOUNT;
+        
+        if (Objects.equals(source_id, destination_id)) {
+            response = new Response(100, "Sorry! Source account and destination account cannot be the same.");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } else if (min_transfer_amnt.compareTo(transfer_amount) > 0) {
+            response = new Response(100, "Sorry! minimum transfer amount is Ksh "+min_transfer_amnt);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
         
         Account source_acc = accountRepository.findByCustomerId(source_id);
         Account destination_acc = accountRepository.findByCustomerId(destination_id);
@@ -123,24 +145,24 @@ public class AccountController extends AbstractUtils {
         } else if (destination_acc == null) {
             response = new Response(100, "Sorry! Account to credit Not found.");
         } else {
-            Long source_balance = source_acc.getCustomerBalance();
-            if (source_balance >= transfer_amount) {
+            BigDecimal source_balance = source_acc.getCustomerBalance();
+            if (source_balance.compareTo(transfer_amount) >= 0) {
                 String transactionDate = currentDateTime("yyyy-MM-dd HH:mm:ss");
                 Transaction transaction = new Transaction(0L, "Transfer", source_id, destination_id, transfer_amount, transactionDate);
                 transactionRepository.save(transaction);
 
-                Long new_balance = source_balance - transfer_amount;
+                BigDecimal new_balance = source_balance.subtract(transfer_amount);
                 source_acc.setCustomerBalance(new_balance);
                 accountRepository.save(source_acc);
                 
-                Long destination_balance = destination_acc.getCustomerBalance();
-                destination_acc.setCustomerBalance(destination_balance + transfer_amount);
+                BigDecimal destination_balance = destination_acc.getCustomerBalance();
+                destination_acc.setCustomerBalance(destination_balance.add(transfer_amount));
                 accountRepository.save(destination_acc);
 
                 String msg = "Ksh "+transfer_amount+" debited from your account. Your new balance is Ksh "+new_balance;
                 response = new Response(0, msg);
             } else {
-                String msg = "Sorry! Insufficient funds. Ksh "+ (transfer_amount - source_balance) +" more needed to perform transaction.";
+                String msg = "Sorry! Insufficient funds. Ksh "+ (transfer_amount.subtract(source_balance)) +" more needed to perform transaction.";
                 response = new Response(105, msg);
             }
         }

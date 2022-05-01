@@ -23,4 +23,11 @@ public abstract class AbstractUtils {
         return sd;
     }
     
+    public Integer generateRandomPin() {
+        int min = 1000;
+        int max = 9999;
+        int pin = (int) ((Math.random() * (max - min)) + min);
+        return pin;
+    }
+    
 }

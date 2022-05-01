@@ -6,7 +6,6 @@
 package com.rest.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,12 +23,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class TransferDto implements Serializable {
+public class RegisterDto implements Serializable {
     
-    private static final long serialVersionUID = -35095373273417463L;
+    private static final long serialVersionUID = 2645460131573081417L;
     
-    private Long source;
-    private Long destination;
-    private BigDecimal Amount;
+    private String name;
     
 }

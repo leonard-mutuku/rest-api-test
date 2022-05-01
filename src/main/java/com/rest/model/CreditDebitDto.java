@@ -6,6 +6,7 @@
 package com.rest.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +29,6 @@ public class CreditDebitDto implements Serializable {
     private static final long serialVersionUID = -2153550743659798829L;
     
     private Long customerId;
-    private Long Amount;
+    private BigDecimal Amount;
     
 }

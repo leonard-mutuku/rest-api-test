@@ -39,7 +39,7 @@ public class TransactionController {
     }
 
     @GetMapping(path = "/{id}", produces = "application/json")
-    public ResponseEntity fetchAll(@PathVariable(name = "id") Long id) {
+    public ResponseEntity fetchOne(@PathVariable(name = "id") Long id) {
         Transaction transaction = transactionRepository.findById(id).orElse(null);
         if (transaction == null) {
             Response response = new Response(100, "Sorry! Transaction Not found.");
@@ -54,7 +54,7 @@ public class TransactionController {
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int limit
     ) {
-        Sort sort = Sort.by("id").descending();
+        Sort sort = Sort.by("transactionId").descending();
         int size = (int) Math.ceil(offset / limit);
         Pageable pageable = PageRequest.of(size, limit, sort);
         Page page = transactionRepository.findAll(pageable);
@@ -66,7 +66,7 @@ public class TransactionController {
     
     @GetMapping(path = "mini-statement/{customer_id}", produces = "application/json")
     public ResponseEntity fetchMiniStatement(@PathVariable(name = "customer_id") Long customer_id) {
-        Sort sort = Sort.by("id").descending();
+        Sort sort = Sort.by("transactionId").descending();
         Pageable pageable = PageRequest.of(0, 10, sort);
         Page page = transactionRepository.findBySourceOrDestination(customer_id, customer_id, pageable);
         Map<String, Object> response = new HashMap<>();

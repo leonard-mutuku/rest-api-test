@@ -6,6 +6,7 @@
 package com.rest.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,12 +39,12 @@ public class Transaction implements Serializable {
     @TableGenerator(name = "Transaction_Gen", initialValue = 999)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Transaction_Gen")
-    private Long id;
+    private Long transactionId;
     
     private String type;
     private Long source;
     private Long destination;
-    private Long amount;
+    private BigDecimal amount;
     private String transactionDate;
     
 }
