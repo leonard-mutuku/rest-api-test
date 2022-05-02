@@ -49,7 +49,7 @@ public class AccountController extends AbstractUtils {
         Response response;
         if (account != null) {
             String balance = "Your Account balance is Ksh "+account.getCustomerBalance();
-            response = new Response(0, balance);
+            response = new Response(200, balance);
         } else {
             response = new Response(100, "Sorry! Account Not found.");
         }
@@ -78,7 +78,7 @@ public class AccountController extends AbstractUtils {
             accountRepository.save(account);
             
             String msg = "Ksh "+credit_amount+" credited to your account. Your new balance is Ksh "+new_balance;
-            response = new Response(0, msg);
+            response = new Response(200, msg);
         } else {
             response = new Response(100, "Sorry! Account to credit Not found.");
         }
@@ -109,7 +109,7 @@ public class AccountController extends AbstractUtils {
                 accountRepository.save(account);
 
                 String msg = "Ksh "+debit_amount+" debited from your account. Your new balance is Ksh "+new_balance;
-                response = new Response(0, msg);
+                response = new Response(200, msg);
             } else {
                 String msg = "Sorry! Insufficient funds. Ksh "+ (debit_amount.subtract(account_balance)) +" more needed to perform transaction.";
                 response = new Response(105, msg);
@@ -160,7 +160,7 @@ public class AccountController extends AbstractUtils {
                 accountRepository.save(destination_acc);
 
                 String msg = "Ksh "+transfer_amount+" debited from your account. Your new balance is Ksh "+new_balance;
-                response = new Response(0, msg);
+                response = new Response(200, msg);
             } else {
                 String msg = "Sorry! Insufficient funds. Ksh "+ (transfer_amount.subtract(source_balance)) +" more needed to perform transaction.";
                 response = new Response(105, msg);

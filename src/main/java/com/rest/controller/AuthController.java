@@ -5,6 +5,10 @@
  */
 package com.rest.controller;
 
+import com.rest.security.JWTUtility;
+import com.rest.security.MyUserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -14,8 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
     
-    public  String generateToke(Long id, Integer pin) {
-        String token = "";
+    @Autowired
+    private JWTUtility jWTUtility;
+    
+    @Autowired
+    private MyUserDetails myUserDetails;
+    
+    public  String generateToken(Long id, Integer pin) {
+        String usrnm = String.valueOf(id) + pin;
+        UserDetails ud = myUserDetails.loadUserByUsername(usrnm);
+        String token = jWTUtility.generateToken(ud);
         return token;
     }
 }

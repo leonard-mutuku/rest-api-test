@@ -7,6 +7,7 @@ package com.rest.controller;
 
 import com.rest.model.Account;
 import com.rest.model.Customer;
+import com.rest.model.LoginDto;
 import com.rest.model.RegisterDto;
 import com.rest.model.Response;
 import com.rest.repository.AccountRepository;
@@ -45,13 +46,13 @@ public class CustomerController extends AbstractUtils {
     }
 
     @PostMapping(path = "/login", consumes = "application/json")
-    public ResponseEntity login(@RequestBody Customer login) {
+    public ResponseEntity login(@RequestBody LoginDto login) {
         Customer customer = customerRepository.findById(login.getId()).orElse(null);
         if (customer != null && Objects.equals(customer.getPin(), login.getPin())) {
-            String token = authController.generateToke(customer.getId(), customer.getPin());
-            return ResponseEntity.status(HttpStatus.OK).body(new Response(0, "Login successful. Your token is: " + token));
+            String token = authController.generateToken(customer.getId(), customer.getPin());
+            return ResponseEntity.status(HttpStatus.OK).body(new Response(200, "Login successful. Your token is: " + token));
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body(new Response(100, "Invalid Login credentials."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(401, "Invalid Login credentials."));
         }
     }
 
@@ -64,6 +65,7 @@ public class CustomerController extends AbstractUtils {
         customer = customerRepository.save(customer);
         Account acc = new Account(customer.getId(), new BigDecimal("0.00"));
         accountRepository.save(acc);
+        System.out.println("customer registered => "+customer.toString());
         return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 

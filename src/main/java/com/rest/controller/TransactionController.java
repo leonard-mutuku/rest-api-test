@@ -61,6 +61,7 @@ public class TransactionController {
         Map<String, Object> response = new HashMap<>();
         response.put("transactions", page.getContent());
         response.put("size", page.getTotalElements());
+        page.getContent().forEach(trx -> System.out.println(trx.toString()));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     
@@ -72,6 +73,7 @@ public class TransactionController {
         Map<String, Object> response = new HashMap<>();
         response.put("transactions", page.getContent());
         response.put("size", page.getTotalElements());
+        page.getContent().forEach(trx -> System.out.println(trx.toString()));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     
